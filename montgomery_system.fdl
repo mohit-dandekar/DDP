@@ -1,0 +1,1082 @@
+// multimode Add/Sub module 
+
+// Exercise 6 
+// Group 10:
+//           Mohit Dandekar
+//           John O'Callaghan
+//           Utku Yalcin
+// 25/11/15
+
+
+/*2 input 1 bit mux*/
+dp mux2_1b(in d0,d1 : ns(1); in sel : ns(1); out o0 : ns(1))
+{
+  sfg do_always
+  {
+    o0 =  sel? d1 : d0;
+  }
+}
+hardwired hw_mux2_1b(mux2_1b){do_always;}
+
+
+dp inst_mux2_1b_0 : mux2_1b
+dp inst_mux2_1b_1 : mux2_1b
+/*2 input 2 bit mux*/
+dp mux2_2b(in d0,d1 : ns(2);in sel : ns(1); out o0 : ns(2))
+{
+  sig o0_0, o0_1, d0_0, d0_1, d1_0, d1_1 : ns(1);
+
+  use inst_mux2_1b_0(d0_0, d1_0, sel, o0_0);
+  use inst_mux2_1b_1(d0_1, d1_1, sel, o0_1);
+  sfg do_always
+  {
+    d0_0 = d0[0];
+    d0_1 = d0[1];
+    d1_0 = d1[0];
+    d1_1 = d1[1];
+    o0 = o0_1 # o0_0;
+  }
+}
+hardwired hw_mux2_2b(mux2_2b){do_always;}
+
+dp inst_mux2_1b_2 : mux2_1b
+dp inst_mux2_1b_3 : mux2_1b
+/*3 input 1 bit mux*/
+dp mux3_1b(in d0,d1,d2 : ns(1); in sel : ns(2); out o0 : ns(1))
+{
+  sig sel0, sel1, out_temp : ns(1);
+
+  use inst_mux2_1b_2(d0,d1,sel0,out_temp);
+  use inst_mux2_1b_3(out_temp,d2,sel1,o0);
+  
+  sfg do_always
+  {
+    sel0 = sel[0];
+    sel1 = sel[1];
+  }
+}
+hardwired hw_mux3_1b(mux3_1b){do_always;}
+
+
+/*2 input 12 bit mux*/
+dp mux2_12b(in d0,d1 : ns(12); in sel : ns(1); out o0 : ns(12))
+{
+  sfg do_always
+  {
+    o0 =  sel? d1 : d0;
+  }
+}
+hardwired hw_mux2_12b(mux2_12b){do_always;}
+
+dp inst_mux2_12b_0 : mux2_12b
+dp inst_mux2_12b_1 : mux2_12b
+/*3 input 1 bit mux*/
+dp mux3_12b(in d0,d1,d2 : ns(12); in sel : ns(2); out o0 : ns(12))
+{
+  sig sel0, sel1: ns(1);
+  sig out_temp : ns(12);
+
+  use inst_mux2_12b_0(d0,d1,sel0,out_temp);
+  use inst_mux2_12b_1(out_temp,d2,sel1,o0);
+  
+  sfg do_always
+  {
+    sel0 = sel[0];
+    sel1 = sel[1];
+  }
+}
+hardwired hw_mux3_12b(mux3_12b){do_always;}
+
+
+
+dp inst_mux2_2b_0 : mux2_2b
+dp inst_mux2_2b_1 : mux2_2b
+/*3 input 2 bit mux*/
+dp mux3_2b(in d0,d1,d2 : ns(2); in sel : ns(2) ; out o0 : ns(2))
+{
+  sig sel0,sel1 : ns(1);
+  sig mux2_2b_0_inp0, mux2_2b_0_inp1, mux2_2b_0_out0 : ns(2);
+  sig mux2_2b_1_inp0, mux2_2b_1_inp1, mux2_2b_1_out1 : ns(2);
+  sfg do_always
+  {
+    sel0 = sel[0];
+    sel1 = sel[1];
+    mux2_2b_0_inp0 = d0;  
+    mux2_2b_0_inp1 = d1; 
+    mux2_2b_1_inp0 = mux2_2b_0_out0;
+    mux2_2b_1_inp1 = d2;
+    o0 = mux2_2b_1_out1;
+  }
+  use inst_mux2_2b_0(mux2_2b_0_inp0, mux2_2b_0_inp1, sel0, mux2_2b_0_out0);
+  use inst_mux2_2b_1(mux2_2b_1_inp0, mux2_2b_1_inp1, sel1, mux2_2b_1_out1);
+}
+hardwired hw_mux3_2b(mux3_2b){do_always;}
+
+
+/*2 input 514 bit mux*/
+dp mux2_514b(in d0,d1 : ns(514); in sel : ns(1); out o0 : ns(514))
+{
+  sfg do_always
+  {
+    o0 = sel? d1 : d0;
+  }
+}
+hardwired hw_mux2_514b(mux2_514b){do_always;}
+
+
+/*2 input 512 bit mux*/
+dp mux2_512b(in d0, d1 : ns(512); in sel : ns(1); out o0 : ns(512))
+{
+  always
+  {
+    o0 = sel? d1 : d0;
+  }
+}
+
+/*4 input 512 bit mux*/
+dp inst_mux2_512b_4 : mux2_512b
+dp inst_mux2_512b_5 : mux2_512b
+dp inst_mux2_512b_6 : mux2_512b
+dp mux4_512b(in d0, d1, d2, d3 : ns(512); in sel : ns(2); out o0 : ns(512))
+{
+
+  sig sel0, sel1 : ns(1);
+  sig out0, out1 : ns(512);
+
+  use inst_mux2_512b_4(d0, d1, sel0, out0);
+  use inst_mux2_512b_5(d2, d3, sel0, out1);
+  use inst_mux2_512b_6(out0, out1, sel1, o0);
+
+  always
+  {
+    sel0 = sel[0];
+    sel1 = sel[1];
+  }
+}
+
+
+/*4 input 514 bit mux*/
+dp inst_mux2_514b_5 : mux2_514b
+dp inst_mux2_514b_6 : mux2_514b
+dp inst_mux2_514b_7 : mux2_514b
+dp mux4_514b(in d0, d1, d2, d3 : ns(514); in sel : ns(2); out o0 : ns(514))
+{
+
+  sig sel0, sel1 : ns(1);
+  sig out0, out1 : ns(514);
+
+  use inst_mux2_514b_5(d0, d1, sel0, out0);
+  use inst_mux2_514b_6(d2, d3, sel0, out1);
+  use inst_mux2_514b_7(out0, out1, sel1, o0);
+
+  always
+  {
+    sel0 = sel[0];
+    sel1 = sel[1];
+  }
+}
+
+
+
+
+/*2 input 2048 bit mux*/
+dp mux2_2048b(in d0, d1 : ns(2048); in sel : ns(1); out o0 : ns(2048))
+{
+  always
+  {
+    o0 = sel? d1 : d0;
+  }
+}
+
+
+/*3 input 2048 bit mux*/
+dp inst_mux2_2048b_0 : mux2_2048b
+dp inst_mux2_2048b_1 : mux2_2048b
+dp mux3_2048b(in d0, d1, d2 : ns(2048); in sel : ns(2); out o0 : ns(2048))
+{
+
+  sig sel0, sel1 : ns(1);
+  sig out0 : ns(2048);
+
+  use inst_mux2_2048b_0(d0, d1, sel0, out0);
+  use inst_mux2_2048b_1(out0, d2, sel1, o0);
+
+  always
+  {
+    sel0 = sel[0];
+    sel1 = sel[1];
+
+  }
+}
+
+dp inst_mux2_514b_0 : mux2_514b
+dp inst_mux2_2b_2 : mux2_2b
+
+/*514 bit add/sub module with 2 bit carry in */
+dp addsub_514b( in a,b : ns(514); 
+                in carry_in : ns(2); 
+                in addsub_cntrl : ns(1); 
+                out c : ns(514))
+{
+  sig op,p,q,comp_q : ns(514);
+  sig carry,zero,one,mode : ns(2);
+
+  use inst_mux2_514b_0(q, comp_q, addsub_cntrl, op);
+  use inst_mux2_2b_2(zero, one, addsub_cntrl, mode );
+  sfg always
+  {
+     zero = 0;
+     one  = 1;
+  }
+  sfg do_always
+  {
+    carry = carry_in + mode;
+    p = a;
+    q = b;
+    comp_q = ~q;
+    c = p + op + carry;
+  }
+}
+hardwired hw_addsub_514b(addsub_514b){do_always;}
+
+
+dp inst_mux3_2048b_0 : mux3_2048b
+dp Ai_reg( in A_in : ns(2048);
+    in shift : ns(1);
+    in w_en : ns(1);
+    out A_i : ns(1))
+{
+
+  reg counter : ns(12);
+
+  reg Ai_reg : ns(2048);
+  sig a_rotate : ns(2048);
+  sig inp_Ai_reg : ns(2048);
+  sig A_out : ns(2048);
+  sig sel : ns(2);
+
+  use inst_mux3_2048b_0(A_in, A_out, a_rotate, sel, inp_Ai_reg);  
+
+  // TODO: Replace 3rd mux input with Ain xram read
+
+  always
+  {
+   counter = w_en? 0 : shift? counter+1 : counter;
+/*   $display("counter : ",counter);
+   $display("w_en : ",w_en);
+   $display("shift : ",shift);*/
+
+    sel = ((shift & ~w_en) << 1) | ~(shift ^ w_en);
+    a_rotate = (A_out[0] # A_out[1:2047]);
+
+    Ai_reg = inp_Ai_reg;
+    A_out = Ai_reg;
+    A_i = inp_Ai_reg[0];
+  }
+}
+
+dp inst_mux4_512b_0 : mux4_512b
+dp B_M_reg( in B : ns(2048);
+    in bank_reg : ns(2);
+    out B_512 : ns(512))
+{
+
+  reg B_register : ns(2048);
+  sig d0, d1, d2, d3 : ns(512);
+  
+  use inst_mux4_512b_0(d0, d1, d2, d3, bank_reg, B_512);
+
+  always
+  {
+    B_register = B;
+    d0 = B_register[0:511];
+    d1 = B_register[512:1023];
+    d2 = B_register[1024:1535];
+    d3 = B_register[1536:2047]  ;
+  }
+}
+
+dp mux2_2050b(in d0,d1 : ns(2050); in sel : ns(2); out o0 : ns(2050))
+{
+  always
+  {
+    o0  = sel? d1 : d0;
+  }
+}
+
+
+dp inst_mux4_514b_0 : mux4_514b
+dp inst_mux2_512b_1 : mux2_512b
+dp inst_mux2_512b_2 : mux2_512b
+dp inst_mux2_512b_3 : mux2_512b
+dp inst_mux2_514b_8 : mux2_514b
+dp inst_mux2_512b_11 : mux2_512b
+dp inst_mux2_512b_21 : mux2_512b
+dp inst_mux2_512b_31 : mux2_512b
+dp inst_mux2_514b_81 : mux2_514b
+dp inst_mux2_514b_9 : mux2_514b
+dp inst_mux2_514b_10 : mux2_514b
+dp inst_mux2_514b_11 : mux2_514b
+dp inst_mux2_514b_12 : mux2_514b
+dp inst_mux2_514b_13 : mux2_514b
+dp inst_mux2_1b_5 : mux2_1b
+dp inst_mux2_2048b_2 : mux2_2048b
+
+dp C_reg( in C_in : ns(514);
+    in wr_bank_sel : ns(2);
+    in rd_bank_sel : ns(2);
+    in rd_shift : ns(1);
+    in w_en : ns(1);
+    in mode : ns(1);
+    out C_out_bank : ns(514);
+    out C_0 : ns(1);
+    out C_out : ns(2048); out C_high : ns(10))
+{
+
+  reg c_reg : ns(2051);
+  sig c00 : ns(512);
+  sig c10 : ns(514);
+  sig c20 : ns(510);
+  sig c30 : ns(514);
+  sig c01 : ns(512);
+  sig c11 : ns(512);
+  sig c21 : ns(512);
+  sig c31 : ns(514);
+
+
+  sig c0_read, c1_read, c2_read, c3_read : ns(514);
+  sig cin_0, cin_1, cin_2 : ns(512);
+  sig cin_3 : ns(514);
+
+  sig a, b, sel0, sel1, sel2, sel3 : ns(1);
+
+  sig c_print : ns(2050);
+
+
+  use inst_mux2_514b_9(c_reg[0:513], c_reg[1:514], rd_shift, c0_read);
+  use inst_mux2_514b_10(c_reg[512:1025], c_reg[513:1026], rd_shift, c1_read);
+  use inst_mux2_514b_11(c_reg[1024:1537], c_reg[1025:1538], rd_shift, c2_read);
+  use inst_mux2_514b_12(c_reg[1536:2049], c_reg[1537:2050], rd_shift, c3_read);
+
+  use inst_mux4_514b_0(c0_read, c1_read, c2_read, c3_read, rd_bank_sel, C_out_bank); 
+  
+  use inst_mux2_512b_1(c_reg[0:511], C_in[0:511], sel0, c00);
+  use inst_mux2_514b_13(c_reg[512:1025], C_in[0:513], sel1, c10);
+  use inst_mux2_512b_3(c_reg[1026:1535], C_in[2:511], sel2, c20);
+  use inst_mux2_514b_8(c_reg[1536:2049], C_in[0:513], sel3, c30);
+
+  use inst_mux2_512b_11(c_reg[0:511], C_in[0:511], sel0, c01);
+  use inst_mux2_512b_21(c_reg[512:1023], C_in[0:511], sel1, c11);
+  use inst_mux2_512b_31(c_reg[1024:1535], C_in[0:511], sel2, c21);
+  use inst_mux2_514b_81(c_reg[1536:2049], C_in[0:513], sel3, c31);
+
+  sig inp0_mux2_2050b,inp1_mux2_2050b,out_mux2_2050b : ns(2050);
+  use mux2_2050b(inp0_mux2_2050b, inp1_mux2_2050b, mode, out_mux2_2050b); 
+
+  use inst_mux2_2048b_2(c_reg[0:2047], c_reg[1:2048], rd_shift, C_out);
+
+  always 
+  {
+    C_high = mode ? (ns(10))out_mux2_2050b[2041:2049] : (ns(10))out_mux2_2050b[1017:1025];
+//$display(" c_reg[bank1] : ",c_reg[512:1023]);
+//$display(" c_reg[bank1]>>1: ",c_reg[513:1024]);
+//$display("              out_mux2_2050b : ",out_mux2_2050b);
+//$display("              mode : ",mode);
+    C_0 = c00[1];
+
+    a = wr_bank_sel[0];
+    b = wr_bank_sel[1];
+
+    sel0 = (~a & ~b) & w_en;
+    sel1 = a & (~b) & w_en;
+    sel2 = (~a) & b & w_en;
+    sel3 = a & b & w_en;
+
+    inp0_mux2_2050b = c30 # c20 # c10 # c00;
+    inp1_mux2_2050b = c31 # c21 # c11 # c01;
+    c_reg = out_mux2_2050b;
+  }
+}
+
+
+
+
+
+
+
+
+dp inst_mux2_514b_1 : mux2_514b
+dp inst_mux2_514b_2 : mux2_514b
+dp inst_mux2_2b_3   : mux2_2b
+
+dp montgomery_step( in cntrl_word : ns(4);
+                    in B,M : ns(512);
+                    in C_In: ns(514);
+                    in carry_in:ns(2);
+                    out C_Out : ns(514))
+{
+
+ 
+  /*Mux for selecting B or M*/ 
+  sig inp0_mux2_514b_1, inp1_mux2_514b_1, out_mux2_514b_1 : ns(514);
+  sig sel_mux2_514b_1 : ns(1);
+  
+    use inst_mux2_514b_1(inp0_mux2_514b_1, inp1_mux2_514b_1, sel_mux2_514b_1, out_mux2_514b_1);
+
+  /*Mux on carry_in*/
+  sig inp0_mux2_2b_3, inp1_mux2_2b_3,  out_mux2_2b_3 : ns(2);
+  sig sel_mux2_2b_3 : ns(1);
+  
+    use inst_mux2_2b_3(inp0_mux2_2b_3, inp1_mux2_2b_3, sel_mux2_2b_3, out_mux2_2b_3);
+
+  /*Add/Sub 514b*/
+  sig inp0_addsub_514b, inp1_addsub_514b, out_addsub_514b: ns(514);  sig inp2_addsub_514b : ns(2);
+  sig sel_addsub_514b : ns(1);
+
+    use addsub_514b(inp0_addsub_514b, inp1_addsub_514b, inp2_addsub_514b, sel_addsub_514b, out_addsub_514b);
+
+  /*Output Mux*/
+  sig inp0_mux2_514b_2 , inp1_mux2_514b_2, out_mux2_514b_2 : ns(514);
+  sig sel_mux2_514b_2 : ns(1);
+
+    use inst_mux2_514b_2(inp0_mux2_514b_2, inp1_mux2_514b_2, sel_mux2_514b_2, out_mux2_514b_2);
+
+
+
+ /*All fixed connections*/
+  always
+  {
+ 
+    inp0_mux2_514b_1 = (ns(514))M;
+    inp1_mux2_514b_1 = (ns(514))B;
+
+    inp0_mux2_2b_3 = 0;
+    inp1_mux2_2b_3 = carry_in;
+  
+    inp0_addsub_514b = C_In;
+    inp1_addsub_514b = out_mux2_514b_1;
+    inp2_addsub_514b = out_mux2_2b_3;
+
+    inp0_mux2_514b_2 = out_addsub_514b;
+    inp1_mux2_514b_2 = C_In;
+    C_Out = out_mux2_514b_2;
+     
+
+    sel_mux2_514b_1 = cntrl_word[0];
+    sel_mux2_514b_2 = cntrl_word[1];
+    sel_mux2_2b_3   = cntrl_word[2];
+    sel_addsub_514b = cntrl_word[3];
+
+  }
+}
+
+dp smart_mux3_2b(in d0,d1,d2 : ns(2); in sel : ns(2);  in bit0 : ns(1); out o0 :ns(2))
+{
+  sig smart_sel : ns(2);
+  sig smart_sel0, smart_sel1 : ns(1);
+
+  use mux3_2b(d0,d1,d2,smart_sel,o0);
+  sfg do_always
+  {
+    smart_sel0 = bit0 | sel[0]; 
+    smart_sel1 = ~bit0 & sel[1];
+    smart_sel = smart_sel1 # smart_sel0;
+  }
+}
+hardwired hw_smart_mux3_2b(smart_mux3_2b){do_always;}
+
+
+dp inst_mux2_1b_4 : mux2_1b
+dp smart_mux2_1b(in d0,d1 : ns(1); in sel : ns(1); in bit0 : ns(1); out o0 : ns(1))
+{
+  sig smart_sel : ns(1);
+
+  use inst_mux2_1b_4(d0,d1,smart_sel,o0);
+  sfg do_always
+  {
+    smart_sel = bit0 ^ sel;
+  }
+}
+hardwired hw_smart_mux2_1b(smart_mux2_1b){do_always;}
+
+
+dp inst_mux2_514b_3 : mux2_514b
+dp inst_mux2_514b_4 : mux2_514b
+dp inst_B_reg : B_M_reg
+dp inst_M_reg : B_M_reg
+dp inst_mux2_2b_4 : mux2_2b
+dp inst_mux2_2b_5 : mux2_2b
+dp inst_mux2_1b_6 : mux2_1b
+
+dp montgomery_mult(in start : ns(1);
+                   in mode  : ns(1);
+                   in A,B,M : ns(2048);
+                   out C    : ns(2048);
+                   out done : ns(1))
+{
+
+  reg creg : ns(514);
+  sig inp_creg , out_creg : ns(514);
+
+  sig mont_mult_cntrl_word : ns(20);
+
+  reg start_reg : ns(1);
+  sig inp_start_reg, out_start_reg : ns(1);
+
+  reg mode_reg : ns(12);
+  sig inp_mode_reg, out_mode_reg : ns(12);
+
+  reg C0_reg : ns(1);
+  sig inp_C0_reg, out_C0_reg : ns(1);
+ 
+  reg C0_inner_reg : ns(1);
+  sig inp_C0_inner_reg, out_C0_inner_reg : ns(1); 
+
+  reg iterator_reg : ns(12);
+  sig inp_iterator_reg, out_iterator_reg : ns(12);
+
+  reg bank_reg : ns(2);
+  sig inp_bank_reg, out_bank_reg : ns(2);
+
+  reg phase_reg : ns(1);
+  sig inp_phase_reg, out_phase_reg : ns(1);
+
+
+  sig inp0_mux2_514b_3, inp1_mux2_514b_3, out_mux2_514b_3 : ns(514);
+  sig sel_mux2_514b_3 : ns(1);
+  
+    use inst_mux2_514b_3(inp0_mux2_514b_3, inp1_mux2_514b_3, sel_mux2_514b_3, out_mux2_514b_3); 
+
+
+  sig inp0_mux3_12b, inp1_mux3_12b, inp2_mux3_12b, out_mux3_12b : ns(12);
+  sig sel_mux3_12b : ns(2);
+
+    use mux3_12b(inp0_mux3_12b, inp1_mux3_12b, inp2_mux3_12b, sel_mux3_12b, out_mux3_12b);
+
+
+  sig inp0_smart_mux3_2b, inp1_smart_mux3_2b, inp2_smart_mux3_2b, out_smart_mux3_2b : ns(2);
+  sig sel0_smart_mux3_2b : ns(2); sig sel1_smart_mux3_2b :ns(1);
+
+    use smart_mux3_2b(inp0_smart_mux3_2b, inp1_smart_mux3_2b, inp2_smart_mux3_2b, sel0_smart_mux3_2b, sel1_smart_mux3_2b, out_smart_mux3_2b);
+
+
+  sig inp0_mux3_1b, inp1_mux3_1b, inp2_mux3_1b, out_mux3_1b : ns(12);
+  sig sel_mux3_1b : ns(2);
+
+    use mux3_1b(inp0_mux3_1b, inp1_mux3_1b, inp2_mux3_1b, sel_mux3_1b, out_mux3_1b);
+
+ 
+  sig inp0_smart_mux2_1b, inp1_smart_mux2_1b, out_smart_mux2_1b : ns(1);
+  sig sel0_smart_mux2_1b : ns(1); sig sel1_smart_mux2_1b : ns(1);
+  
+    use smart_mux2_1b(inp0_smart_mux2_1b, inp1_smart_mux2_1b, sel0_smart_mux2_1b, sel1_smart_mux2_1b,  out_smart_mux2_1b); 
+
+
+  sig sel_mont_step : ns(4);
+  sig inp0_mont_step, inp1_mont_step : ns(512);
+  sig inp2_mont_step : ns(514);
+  sig inp3_mont_step : ns(2);
+  sig out_mont_step : ns(514); 
+
+    use montgomery_step(sel_mont_step,
+                       inp0_mont_step,
+                       inp1_mont_step,
+                       inp2_mont_step,
+                       inp3_mont_step,
+                       out_mont_step);
+
+  reg A_i_reg :ns(1);
+  sig inp0_Ai_reg : ns(2048); sig sel0_Ai_reg, sel1_Ai_reg : ns(1); 
+  sig out_Ai_reg : ns(1);
+
+    use Ai_reg(inp0_Ai_reg, sel0_Ai_reg, sel1_Ai_reg, out_Ai_reg);
+
+
+  sig inp0_B_reg : ns(2048); sig sel_B_reg : ns(2); sig out_B_reg : ns(512); 
+  
+    use inst_B_reg(inp0_B_reg, sel_B_reg, out_B_reg);
+
+
+  sig inp0_M_reg : ns(2048); sig sel_M_reg : ns(2); sig out_M_reg : ns(512); 
+  
+    use inst_M_reg(inp0_M_reg, sel_M_reg, out_M_reg);
+
+
+  sig inp0_C_reg : ns(514); sig sel0_C_reg, sel1_C_reg : ns(2); sig sel2_C_reg, sel3_C_reg, sel4_C_reg  : ns(1); sig out0_C_reg : ns(514) ; sig out1_C_reg : ns(1); 
+  sig out2_C_reg : ns(2048); sig out3_C_reg : ns(10);
+
+    use C_reg(inp0_C_reg, sel0_C_reg, sel1_C_reg, sel2_C_reg, sel3_C_reg, sel4_C_reg, out0_C_reg, out1_C_reg, out2_C_reg, out3_C_reg);
+
+
+  sig inp0_mux2_2b_5, inp1_mux2_2b_5, out_mux2_2b_5 : ns(2);
+  sig sel_mux2_2b_5 : ns(1);
+    
+    use inst_mux2_2b_5(inp0_mux2_2b_5, inp1_mux2_2b_5, sel_mux2_2b_5, out_mux2_2b_5);
+
+  reg sub_res_reg : ns(1);
+  sig inp_sub_res_reg, out_sub_res_reg : ns(1);
+  sig inp0_mux2_1b_6, inp1_mux2_1b_6, out_mux2_1b_6 : ns(2);
+  sig sel_mux2_1b_6 : ns(1);
+    
+    use inst_mux2_1b_6(inp0_mux2_1b_6, inp1_mux2_1b_6, sel_mux2_1b_6, out_mux2_1b_6);
+
+
+  sig inp0_mux2_514b_4, inp1_mux2_514b_4, out_mux2_514b_4 : ns(514); 
+  sig sel_mux2_514b_4 : ns(1);
+  
+    use inst_mux2_514b_4(inp0_mux2_514b_4, inp1_mux2_514b_4, sel_mux2_514b_4, out_mux2_514b_4);
+
+
+  sig zero_10b : ns(10);
+  sig bank_lim : ns(3);
+  sig sub_res_mode0, sub_res_mode1  : ns(12);
+  always
+  {
+/*
+          $display(" #####   mont_mult_cntrl_word = ",mont_mult_cntrl_word);
+          $display(" #####  iter : ",iterator_reg);
+          $display(" ##### out_mux2_514b_3 : ", out_mux2_514b_3);
+          $display(" ##### out_mux2_514b_4 : ", out_mux2_514b_4);
+          $display(" ##### carry going in  :", out_creg[512:513]);*/
+
+    A_i_reg = out_Ai_reg;
+
+    zero_10b = 0;
+    inp_start_reg = start;
+    start_reg = inp_start_reg;    
+    out_start_reg = start_reg;
+ 
+    inp_mode_reg = (mode # ~mode # zero_10b) ;
+    mode_reg = inp_mode_reg;
+    out_mode_reg = mode_reg;
+    bank_lim = ((ns(3))(out_mode_reg[10:11])<<1)-1;
+
+    inp_C0_reg = out1_C_reg;
+    C0_reg = inp_C0_reg;
+    out_C0_reg = C0_reg;
+
+    inp_C0_inner_reg = out_mux3_1b;
+    C0_inner_reg = inp_C0_inner_reg;
+    out_C0_inner_reg = C0_inner_reg;
+
+    inp_iterator_reg = out_mux3_12b;
+    iterator_reg = inp_iterator_reg;
+    out_iterator_reg = iterator_reg;
+
+    inp_bank_reg = out_smart_mux3_2b;
+    bank_reg = inp_bank_reg;
+    out_bank_reg  = bank_reg;
+ 
+    inp_phase_reg = out_smart_mux2_1b;
+    phase_reg = inp_phase_reg;
+    out_phase_reg = phase_reg;
+
+
+    
+    inp0_mux3_12b = 0;
+    inp1_mux3_12b = out_iterator_reg;
+    inp2_mux3_12b = out_iterator_reg + 1;
+
+
+    inp0_smart_mux3_2b = 0;
+    inp1_smart_mux3_2b = out_bank_reg;
+    inp2_smart_mux3_2b = out_bank_reg + 1;
+
+    
+    inp0_mux3_1b = 0;
+    inp1_mux3_1b = out_C0_inner_reg;
+    inp2_mux3_1b = out_mont_step[0];
+   
+    inp0_smart_mux2_1b = 0;
+    inp1_smart_mux2_1b = out_phase_reg + 1; 
+
+   
+    inp0_mux2_514b_3 = 0;
+    inp1_mux2_514b_3 = out_mont_step;
+
+    inp0_Ai_reg = A;
+    
+    inp0_B_reg = B;
+  
+    inp0_M_reg = M;
+
+    inp0_C_reg = out_mux2_514b_3;
+   
+ 
+    inp_creg = out_mux2_514b_3;
+    creg = inp_creg;
+    out_creg = creg;
+
+    inp0_mux2_514b_4 = out0_C_reg;
+    inp1_mux2_514b_4 = out_creg;
+   
+
+    inp0_mux2_2b_5 = out_mux2_514b_4[512:513];  
+    inp1_mux2_2b_5 = 0;  
+ 
+    inp0_mont_step = out_B_reg; 
+    inp1_mont_step = out_M_reg; 
+    inp2_mont_step = out_mux2_2b_5 # out_mux2_514b_4[0:511]; 
+    inp3_mont_step = out_creg[512:513] ;
+
+    sub_res_mode0 = (ns(12))M[1016:1023] - (ns(12))out3_C_reg;
+    sub_res_mode1 = (ns(12))M[2040:2047] - (ns(12))out3_C_reg;
+
+    /*
+    $display("M high :", M[1016:1023] );
+    $display("C high :", out3_C_reg);
+    $display(" sub_res_mode0 : ",sub_res_mode0 );
+    $display(" sub_res_mode1 : ",sub_res_mode1 );
+    $display(" inp0_mux2_1b_6 : ",inp0_mux2_1b_6 );
+    $display(" inp1_mux2_1b_6 : ",inp1_mux2_1b_6 );
+    $display(" out_mux2_1b_6 : ",out_mux2_1b_6 );
+    $display(" out_sub_res_reg : ",out_sub_res_reg);*/
+    inp0_mux2_1b_6 = sub_res_mode0[10];
+    inp1_mux2_1b_6 = sub_res_mode1[10];
+    inp_sub_res_reg = out_mux2_1b_6;
+    sub_res_reg = inp_sub_res_reg;
+    out_sub_res_reg = sub_res_reg; 
+
+    C = out2_C_reg;
+
+    sel0_smart_mux2_1b = mont_mult_cntrl_word[0];
+    sel1_smart_mux2_1b = out_mont_step[0] & mont_mult_cntrl_word[18];
+    sel_mux2_514b_3 = mont_mult_cntrl_word[1];
+    sel_mux3_1b = mont_mult_cntrl_word[2:3];
+    sel0_smart_mux3_2b = mont_mult_cntrl_word[4:5];
+    sel1_smart_mux3_2b = out_mont_step[0] & mont_mult_cntrl_word[18];
+    sel_mux3_12b = mont_mult_cntrl_word[6:7];
+    sel_M_reg = out_bank_reg; 
+    sel_B_reg = out_bank_reg;
+    sel0_Ai_reg = mont_mult_cntrl_word[8];
+    sel1_Ai_reg = mont_mult_cntrl_word[9];
+    sel0_C_reg = out_bank_reg;
+    sel1_C_reg = out_bank_reg;
+    sel2_C_reg = mont_mult_cntrl_word[10];
+    sel3_C_reg = mont_mult_cntrl_word[11];
+    sel4_C_reg = out_mode_reg;
+    sel_mont_step = mont_mult_cntrl_word[12:15];
+    sel_mux2_514b_4 = mont_mult_cntrl_word[16];
+    sel_mux2_2b_5 = mont_mult_cntrl_word[17];
+    sel_mux2_1b_6 = mode;
+    done = mont_mult_cntrl_word[19]; 
+   
+  }
+
+  sfg mont_mult_cntrl_word_idle{mont_mult_cntrl_word = 0x22E00; /*$display("C : ",C);*/}
+
+  sfg mont_mult_cntrl_word_outloop_init{mont_mult_cntrl_word = 0x22E20;}
+  sfg mont_mult_cntrl_word_outloop_iter{mont_mult_cntrl_word = 0x22E20;}
+  sfg mont_mult_cntrl_word_outloop_exit{mont_mult_cntrl_word = 0x22E00;}
+  
+
+  sfg mont_mult_cntrl_word_cond0_init{mont_mult_cntrl_word = 0x20C62; /*$display("C : ",C);*/}
+  sfg mont_mult_cntrl_word_cond0_iter{mont_mult_cntrl_word = 0x24C62;}
+  sfg mont_mult_cntrl_word_cond0_exit{mont_mult_cntrl_word = 0x04D82;}
+
+  sfg mont_mult_cntrl_word_cond1_init{mont_mult_cntrl_word = 0x61C6A; /*$display("C : ",C);*/}
+  sfg mont_mult_cntrl_word_cond1_case0_iter{mont_mult_cntrl_word = 0x25C66;}
+  sfg mont_mult_cntrl_word_cond1_case0_exit{mont_mult_cntrl_word = 0x05D82;}
+  sfg mont_mult_cntrl_word_cond1_case1_ph0_iter{mont_mult_cntrl_word = 0x05C57;}
+  sfg mont_mult_cntrl_word_cond1_case1_ph1_iter{mont_mult_cntrl_word = 0x10867;}
+  sfg mont_mult_cntrl_word_cond1_case1_ph1_exit{mont_mult_cntrl_word = 0x10982;}
+
+  sfg mont_mult_cntrl_word_cond2_init{mont_mult_cntrl_word = 0x02C62; /*$display("C : ",C);*/}
+  sfg mont_mult_cntrl_word_cond2_iter{mont_mult_cntrl_word = 0x02C62;}
+  sfg mont_mult_cntrl_word_cond2_exit{mont_mult_cntrl_word = 0x02D82;}
+   
+  sfg mont_mult_cntrl_word_subtract_init{mont_mult_cntrl_word = 0x28C22; /*$display("C : ",C);*/}
+  sfg mont_mult_cntrl_word_subtract_iter{mont_mult_cntrl_word = 0x2CC22;}
+  sfg mont_mult_cntrl_word_subtract_exit{mont_mult_cntrl_word = 0x8E002;/*$display($cycle,"----------------------------- TERMINATION ---------------------------");*/ }
+ 
+
+  sfg mont_mult_cntrl_word_exit{mont_mult_cntrl_word = 0xA2402;  /*$display($cycle,"----------------------------- TERMINATION ---------------------------");*/} 
+
+  
+
+}
+fsm fsm_montgomery_mult(montgomery_mult)
+{
+  initial idle_state;
+  state outloop_init_state,outloop_iter_state, cond0_state, cond1_state, cond2_state, subtract_state;
+ 
+  @idle_state if((start_reg == 1)) then (mont_mult_cntrl_word_outloop_init) -> outloop_init_state ;
+              else (mont_mult_cntrl_word_idle) -> idle_state; 
+
+  @outloop_init_state if((bank_reg < bank_lim)) then(mont_mult_cntrl_word_outloop_iter) -> outloop_init_state;
+                      else (mont_mult_cntrl_word_outloop_exit) -> outloop_iter_state;
+ 
+  @outloop_iter_state if((iterator_reg < mode_reg) & (A_i_reg == 0) & (C0_reg == 1)) then (mont_mult_cntrl_word_cond0_init) -> cond0_state;
+                   else if((iterator_reg < mode_reg) & (A_i_reg == 1)) then (mont_mult_cntrl_word_cond1_init) -> cond1_state;
+                   else if(iterator_reg < mode_reg) then (mont_mult_cntrl_word_cond2_init) -> cond2_state;
+                   else if(sub_res_reg == 1) then  (mont_mult_cntrl_word_subtract_init) -> subtract_state;
+                   else (mont_mult_cntrl_word_exit) -> idle_state;
+
+  @subtract_state if((bank_reg <= bank_lim)) then (mont_mult_cntrl_word_subtract_iter) -> subtract_state;
+               else (mont_mult_cntrl_word_subtract_exit) -> idle_state;
+
+
+ 
+
+  @cond0_state if((bank_reg < bank_lim)) then (mont_mult_cntrl_word_cond0_iter) -> cond0_state;
+               else (mont_mult_cntrl_word_cond0_exit) -> outloop_iter_state;
+
+
+  @cond1_state if((C0_inner_reg == 0) & (bank_reg < bank_lim)) then (mont_mult_cntrl_word_cond1_case0_iter) -> cond1_state;
+               else if((C0_inner_reg == 0)) then (mont_mult_cntrl_word_cond1_case0_exit) -> outloop_iter_state;
+               else if((C0_inner_reg == 1) & (phase_reg == 0)) then (mont_mult_cntrl_word_cond1_case1_ph0_iter) -> cond1_state;
+               else if((C0_inner_reg == 1) & (phase_reg == 1) & (bank_reg < bank_lim))  then (mont_mult_cntrl_word_cond1_case1_ph1_iter) -> cond1_state;
+               else (mont_mult_cntrl_word_cond1_case1_ph1_exit) -> outloop_iter_state;
+
+
+  @cond2_state if((bank_reg < bank_lim)) then (mont_mult_cntrl_word_cond2_iter) -> cond2_state;
+               else (mont_mult_cntrl_word_cond2_exit) -> outloop_iter_state;
+
+}
+
+
+dp inst_mux2_2048b_3 : mux2_2048b
+dp M_reg(in data_in : ns(8); in wr_en : ns(1); out data_out : ns(2048))
+{
+  reg Mreg : ns(2048);
+  sig in_Mreg, out_Mreg, out_Mreg_new : ns(2048);
+
+  use inst_mux2_2048b_3( out_Mreg, out_Mreg_new, wr_en ,in_Mreg);
+  
+ always
+ {
+//  $display($cycle, "           M  datain :",data_in);
+   Mreg = in_Mreg;
+   out_Mreg = Mreg;
+   out_Mreg_new = data_in # out_Mreg[8:2047]; 
+   data_out = out_Mreg;
+ }
+}
+
+dp inst_mux2_2048b_5 : mux2_2048b
+dp R2modM_reg(in data_in : ns(8); in wr_en : ns(1); out data_out : ns(2048))
+{
+  reg R2modMreg : ns(2048);
+  sig in_R2modMreg, out_R2modMreg, out_R2modMreg_new : ns(2048);
+
+  use inst_mux2_2048b_5( out_R2modMreg, out_R2modMreg_new, wr_en ,in_R2modMreg);
+  
+ always
+ {
+//  $display($cycle, "           R2modM  datain :",data_in);
+   R2modMreg = in_R2modMreg;
+   out_R2modMreg = R2modMreg;
+
+   out_R2modMreg_new = data_in # out_R2modMreg[8:2047] ; 
+   data_out = out_R2modMreg;
+ }
+}
+
+dp inst_mux2_2048b_6 : mux2_2048b
+dp inst_mux2_2048b_10 : mux2_2048b
+dp X_reg(in data_in : ns(8); in wr_en : ns(1); in data_in2048 : ns(2048) ;in wr_en2048: ns(1); out data_out : ns(2048))
+{
+  reg Xreg : ns(2048);
+  sig in_Xreg0,in_Xreg, out_Xreg, out_Xreg_new : ns(2048);
+
+  use inst_mux2_2048b_6( out_Xreg, out_Xreg_new, wr_en ,in_Xreg0);
+  use inst_mux2_2048b_10( in_Xreg0, data_in2048, wr_en2048 ,in_Xreg);
+  
+ always
+ {
+ // $display($cycle, "           X  datain :",data_in);
+   Xreg = in_Xreg;
+   out_Xreg = Xreg;
+
+   out_Xreg_new = data_in # out_Xreg[8:2047] ; 
+   data_out = out_Xreg;
+ }
+}
+
+dp inst_mux2_2048b_7 : mux2_2048b
+dp inst_mux2_2048b_8 : mux2_2048b
+dp inst_mux2_2048b_9 : mux2_2048b
+
+dp A_reg(in data_in : ns(8); in wr_en : ns(1); out data_out8 : ns(8); in rd_en : ns(1); in data_in2048 : ns(2048); in wr_en2048 : ns(1); out data_out : ns(2048))
+{
+  reg Areg : ns(2048);
+  sig in_Areg0,in_Areg1,  in_Areg, out_Areg, out_Areg_newwr,out_Areg_newrd : ns(2048);
+
+  use inst_mux2_2048b_7( Areg, out_Areg_newrd, rd_en ,in_Areg0);
+  use inst_mux2_2048b_8( in_Areg0, out_Areg_newwr, wr_en ,in_Areg1);
+  use inst_mux2_2048b_9( in_Areg1, data_in2048, wr_en2048 ,in_Areg);
+ 
+ always
+ {
+//  $display($cycle, "           A  datain :",data_in);
+   Areg = in_Areg;
+   out_Areg = Areg;
+   out_Areg_newwr = data_in # out_Areg[8:2047] ; 
+   out_Areg_newrd = out_Areg[8:2047]; 
+   data_out8 = Areg[0:7];
+   data_out = Areg;
+ }
+}
+
+dp inst_mux2_2048b_11 : mux2_2048b
+dp inst_mux2_2048b_12 : mux2_2048b
+dp inst_mux2_2048b_13 : mux2_2048b
+dp mem_interface(in cntrl_word_in : ns(8); out cntrl_word_out : ns(8);  out address_req : ns(16); out rd_wr : ns(1);out data_out : ns(8); in data_in : ns(8) )
+{
+  sig out_M_reg, out_A_reg, out_X_reg,  out_R2modM_reg : ns(2048);
+  sig sel_M_reg, sel0_A_reg, sel1_A_reg,sel2_A_reg, sel0_X_reg, sel1_X_reg,sel_E_reg, sel_R2modM_reg : ns(2048);
+  sig A,B,M : ns(2048); sig C_out : ns(2048);reg C :ns(2048); reg done_in: ns(1); sig start_in,done_ins: ns(1);
+  sig A_out0 : ns(2048); sig selA_mux0, selA_mux1 , selB_mux: ns(1);
+
+  reg mode, start : ns(1); reg prog,mont_sel : ns(3);
+
+  use M_reg(data_in, sel_M_reg, out_M_reg); 
+  use R2modM_reg(data_in, sel_R2modM_reg, out_R2modM_reg); 
+  use X_reg(data_in, sel0_X_reg, C, sel1_X_reg, out_X_reg); 
+  use A_reg(data_in, sel0_A_reg, data_out, sel1_A_reg, C, sel2_A_reg, out_A_reg); 
+
+  use inst_mux2_2048b_11(out_X_reg, 1, selA_mux0, A_out0);
+  use inst_mux2_2048b_12(A_out0, out_A_reg, selA_mux1, A);
+  sig sel_B_mux : ns(1);
+  use inst_mux2_2048b_13(out_R2modM_reg, out_A_reg, selB_mux, B);
+ 
+  use montgomery_mult(start_in, mode, A, B, M, C_out, done_ins);
+  reg begin :ns(8); 
+ 
+  sig cntrl_word: ns(12); reg counter : ns(12);
+  always
+  {
+
+    start = cntrl_word_in[0];
+    mode = cntrl_word_in[1];
+    prog = cntrl_word_in[2:3];
+    mont_sel = cntrl_word_in[4:6];
+    begin = cntrl_word_in; 
+
+    sel_M_reg = cntrl_word[0];
+    sel_R2modM_reg = cntrl_word[1];
+    sel0_X_reg = cntrl_word[2];
+    sel1_X_reg = cntrl_word[3]& ~mont_sel[2] & ((prog == 0x1)? 1: 0);
+    sel0_A_reg = cntrl_word[4];
+    sel1_A_reg = cntrl_word[5];
+    sel2_A_reg = cntrl_word[6]& mont_sel[2] & ((prog == 0x1)? 1: 0);
+    selA_mux0 = mont_sel[1] & mont_sel[0]; 
+    selA_mux1 = ~mont_sel[1] & mont_sel[0];
+    selB_mux  = mont_sel[1] | mont_sel[0];
+
+    start_in = cntrl_word[8];
+
+    M = out_M_reg;
+    C = done_ins? C_out : C;
+    done_in = done_ins;
+    counter = cntrl_word[7]? (counter + 1) : 0;
+//$display($cycle, "counter ",counter);
+    address_req = counter + ((prog == 2)? 1024 : 0);
+   // $display("control_word_out ",cntrl_word_out);
+
+//    $display($cycle,"control_word_in ",cntrl_word_in);
+//    $display($cycle,"start ", start);
+//    $display($cycle,"mode ", mode);
+//    $display($cycle,"prog ", prog);
+//    $display($cycle,"mont_sel ", mont_sel);
+  }
+  sfg cntrl_idle{cntrl_word = 0x00  ; cntrl_word_out = 0; rd_wr = 0;/* $display($cycle,"IDLE");*/}
+  sfg cntrl_read_from_mem_M_0{cntrl_word = 0x81  ; cntrl_word_out = 0; rd_wr = 0;$display("BEGIN CYCLE : ",$cycle,"  ");}
+  sfg cntrl_read_from_mem_M{cntrl_word = 0x81  ; cntrl_word_out = 0; rd_wr = 0;/*$display($cycle,"READ M ",counter);*/}
+  sfg cntrl_read_from_mem_R2modM{cntrl_word = 0x82  ; cntrl_word_out = 0; rd_wr = 0;/*$display($cycle,"READ R2modM ",counter);*/}
+  sfg cntrl_read_from_mem_X{cntrl_word = 0x84  ; cntrl_word_out = 0; rd_wr = 0;/*$display($cycle,"READ X",counter);*/}
+  sfg cntrl_read_from_mem_A{cntrl_word = 0x90  ; cntrl_word_out = 0; rd_wr = 0;/*$display($cycle,"READ A",counter);*/}
+  sfg cntrl_write_to_mem{cntrl_word = 0xA0  ; cntrl_word_out = 0; rd_wr = 1;/*$display($cycle,"WRITE A");*/}
+  sfg mont_mult{cntrl_word = 0x100  ; cntrl_word_out = 0; rd_wr = 0; /*$display("MONT MULT BEGIN cycle : ",$cycle);*//* $display($cycle,"MONT MULT   A :",A);
+$display($cycle,"MONT MULT   B :",B);$display($cycle,"MONT MULT   M :",M); $display("MONT MREG :",out_M_reg);
+$display("MONT XREG :",out_X_reg);
+$display("MONT R2modMREG :",out_R2modM_reg);
+$display("MONT AREG :",out_A_reg);*/
+}
+  sfg write_results{cntrl_word = 0x48 ; cntrl_word_out = 0; rd_wr = 0;/*$display("MONT MULT END cycle : ",$cycle);*//*$display($cycle,"WRITE_RES  C : ",C);*/}
+  sfg done_sig{cntrl_word = 0x00 ; cntrl_word_out = 1; rd_wr = 0; /*$display($cycle,"DONE SIG");*/}
+  sfg display_res{
+                   cntrl_word = 0x00; cntrl_word_out = 1; rd_wr = 0;
+                  
+                   $display("END   CYCLE : ",$cycle );
+                   $display(" ------------------------------- RESULT ------------------------------------");
+                   $display(" ",C);
+                   $display(" ---------------------------------------------------------------------------");}
+//sfg done_reading{$display($cycle," READDONE");}
+}
+fsm fsm_mem_interface(mem_interface)
+{
+  initial idle_state;
+  state read_from_mem_state, wait_for_neg_start_state, write_to_mem_state,wait_for_mont_mult_state;
+
+  @idle_state if((start == 0) | (begin == 0xff)) then (cntrl_idle) -> idle_state;
+              else if(prog == 0) then (cntrl_read_from_mem_M_0) -> read_from_mem_state;
+              else if(prog == 2) then (cntrl_write_to_mem) -> write_to_mem_state;
+              else if(prog == 1) then (mont_mult) -> wait_for_mont_mult_state; 
+              else (display_res) -> wait_for_neg_start_state;
+
+
+  @wait_for_neg_start_state if(start == 1) then (done_sig)-> wait_for_neg_start_state;
+                            else (done_sig) -> idle_state;
+
+  @read_from_mem_state if(counter < 256 ) then (cntrl_read_from_mem_M) -> read_from_mem_state;
+                       else if(counter < 512 ) then (cntrl_read_from_mem_R2modM) -> read_from_mem_state;
+                       else if(counter < 768 ) then (cntrl_read_from_mem_X) -> read_from_mem_state;
+                       else if(counter < 1023) then (cntrl_read_from_mem_A) -> read_from_mem_state;
+  //                     else (cntrl_read_from_mem_A, done_reading) -> wait_for_neg_start_state;
+                       else (cntrl_read_from_mem_A) -> wait_for_neg_start_state;
+
+
+  @write_to_mem_state if(counter < 254) then (cntrl_write_to_mem) -> write_to_mem_state;
+                       else (cntrl_write_to_mem) -> wait_for_neg_start_state;
+
+  @wait_for_mont_mult_state if(done_in == 0) then (cntrl_idle) -> wait_for_mont_mult_state;
+                            else (write_results) ->wait_for_neg_start_state;
+
+}
+
+ ipblock my8051 {
+   iptype "i8051system";
+   ipparm "exec=rsa_exponent.ihx";
+   ipparm "verbose=0";
+ }
+
+ ipblock my8051_ins(out data : ns(8)) {
+   iptype "i8051systemsource";
+   ipparm "core=my8051";
+   ipparm "port=P0";
+ }
+
+ ipblock my8051_busyout(in data : ns(8)) {
+   iptype "i8051systemsink";
+   ipparm "core=my8051";
+   ipparm "port=P3";
+ }
+
+
+ ipblock myRAM(in idata : ns(8); out odata : ns(8); in address : ns(16); in wr : ns(1)){
+        iptype "i8051buffer";
+        ipparm "core=my8051";
+        ipparm "xbus=0x1000";
+        ipparm "xrange=0xA00";
+ }
+
+
+
+/*----------------------------------------------------------------------------*/
+dp module_sys
+{
+   sig ins, din, dout, busy : ns(8);
+   sig address : ns(16);
+   sig wr : ns(1);
+   use my8051;
+   use my8051_ins(ins);
+   use my8051_busyout(busy);
+   use myRAM(dout, din, address, wr);
+   use mem_interface(ins, busy, address, wr, dout, din);
+}
+
+
+system S{
+  module_sys;
+}
